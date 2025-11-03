@@ -1,5 +1,11 @@
 # Repository Guidelines
 
+## Initial Agent Workflow
+- Ask the repository owner to clarify the repository's purpose and identify which documentation or institutional knowledge needs to be collected before starting other tasks.
+- Use Crawl4AI to scrape the requested documentation sources and save the gathered references in this project (e.g., under `knowledge/` or `docs/`) with clear source attribution.
+- Establish and document a strategy for keeping the collected knowledge resources up to date, including check-in cadence, tooling, and responsible parties.
+- Stage a commit with the onboarding work and push it to the configured remote; if no remote exists, ask the owner to set one up before proceeding.
+
 ## Project Structure & Module Organization
 - Workflows live under `Alfred.alfredpreferences/workflows/user.workflow.<UUID>/`; keep the UUID directory names and co-locate scripts (`media.py`, `openurls.py`), `info.plist`, icons, and the workflow README.
 - Vendored assets such as `mako/`, `templates/`, gifs, or custom HTML stay inside the workflow directory; update `info.plist` when adding new files so Alfred sees them.
