@@ -21,3 +21,14 @@ This repository is the starting point for new agent-based engagements. Launch a 
 - `templates/` — reusable snippets and scaffolds (e.g., `templates/genai-project/`).
 
 When you customise this template for a project, update this README with context about the engagement, environment setup, and deployment targets so new collaborators can ramp quickly.
+
+## Co-Authors
+
+This project is developed collaboratively with AI assistance. Commit attribution follows the workspace conventions in `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`.
+
+| Agent | Role | Recent Commits |
+|-------|------|----------------|
+| Main Assistant | Template evolution and automation | `git log --grep="Agent: Main Assistant"` |
+| code-reviewer | Code review and guardrails | `git log --grep="Agent: code-reviewer"` |
+
+Run `git log --grep="Agent:" --oneline` to see the full agent history for this repository. See the workspace conventions document for additional filters.

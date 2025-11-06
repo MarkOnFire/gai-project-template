@@ -38,4 +38,15 @@ Copy this directory to jump-start a new generative AI project. It captures the c
 - `scripts/` — Automation scripts. `crawl_docs.py` handles interactive Crawl4AI runs.
 - `.gitignore` — Keeps virtual environments and artifacts out of version control.
 
-Adapt the template as needed: add workflow-specific commands, seed the knowledge directory with domain references, or include additional setup scripts. The goal is to provide a repeatable starting point that pairs project analysis with a curated knowledge base.*** End Patch
+Adapt the template as needed: add workflow-specific commands, seed the knowledge directory with domain references, or include additional setup scripts. The goal is to provide a repeatable starting point that pairs project analysis with a curated knowledge base.
+
+## Co-Authors
+
+This project is developed collaboratively with AI assistance. Commit attribution follows the workspace conventions in `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`.
+
+| Agent | Role | Recent Commits |
+|-------|------|----------------|
+| Main Assistant | Primary development (update per project) | `git log --grep="Agent: Main Assistant"` |
+| code-reviewer | Code review and QA | `git log --grep="Agent: code-reviewer"` |
+
+Update this table with any project-specific agents. Run `git log --grep="Agent:" --oneline` to see the full agent history for the repository. See the workspace conventions document for more query examples.

@@ -1,5 +1,11 @@
 # Repository Guidelines
 
+## Git Commit Convention
+
+**IMPORTANT**: This project follows workspace-wide commit conventions.
+
+**See**: `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`
+
 ## Initial Agent Workflow
 - Ask the repository owner to clarify the repository's purpose and identify which documentation or institutional knowledge needs to be collected before starting other tasks.
 - Use Crawl4AI to scrape the requested documentation sources and save the gathered references in this project (e.g., under `knowledge/` or `docs/`) with clear source attribution.
