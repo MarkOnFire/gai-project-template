@@ -24,11 +24,45 @@ When you customise this template for a project, update this README with context 
 
 ## Co-Authors
 
-This project is developed collaboratively with AI assistance. Commit attribution follows the workspace conventions in `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`.
+This repository is developed collaboratively with AI assistance. Contributors are tracked via git commits following workspace conventions.
 
-| Agent | Role | Recent Commits |
-|-------|------|----------------|
-| Main Assistant | Template evolution and automation | `git log --grep="Agent: Main Assistant"` |
-| code-reviewer | Code review and guardrails | `git log --grep="Agent: code-reviewer"` |
+### Template Agents
 
-Run `git log --grep="Agent:" --oneline` to see the full agent history for this repository. See the workspace conventions document for additional filters.
+| Agent | Role | Invocation |
+|-------|------|------------|
+| **Main Assistant** | General development, bug fixes, documentation | Primary assistant for all standard tasks |
+| **code-reviewer** | Code review, architectural feedback, security audits | Invoke for quality assurance |
+| **janitor** | Workspace organization and cleanup | Invoke when project needs cleanup or new workspace structure |
+| **template-maintainer** | Template evolution and workspace compliance | Invoke when updating template for convention changes |
+| **agent-bootstrap-guide** | Guide projects through template adoption | Invoke when helping new projects use this template |
+| **crawl4ai-knowledge-harvester** | Documentation harvesting and knowledge base curation | Invoke for Crawl4AI and knowledge base tasks |
+
+### Agent Contributions
+
+View agent-specific contributions using git log:
+
+```bash
+# View all commits by specific agent
+git log --grep="Agent: Main Assistant"
+git log --grep="Agent: template-maintainer"
+
+# View all agent-attributed commits
+git log --grep="Agent:" --oneline
+
+# Count commits by agent
+git log --oneline | grep -o '\[Agent: [^]]*\]' | sort | uniq -c
+
+# View commits from last week by agent
+git log --grep="Agent: crawl4ai-knowledge-harvester" --since="1 week ago"
+```
+
+### Workspace Integration
+
+This template follows workspace-wide conventions for agent collaboration:
+
+- **Commit Attribution**: All AI-generated commits include `[Agent: <name>]` after the subject line
+- **Agent Registry**: Template agents registered in `/Users/mriechers/Developer/workspace_ops/conventions/AGENT_REGISTRY.md`
+- **Infrastructure Compliance**: Maintains Level 3 compliance with workspace requirements
+- **Cross-Platform**: Agents work with Claude Code, Cursor, GitHub Copilot, and other AI tools
+
+See [workspace conventions](../../workspace_ops/conventions/COMMIT_CONVENTIONS.md) for complete details on agent collaboration and commit standards.
