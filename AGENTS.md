@@ -2,9 +2,161 @@
 
 This document describes the agent roles, responsibilities, and collaboration patterns for projects derived from this template.
 
+## Long-Running Development Pattern
+
+This template implements Anthropic's proven **two-agent harness** for autonomous multi-session development. This pattern enables complex projects to be built systematically over many sessions with maintained quality and continuity.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Initializer Agent                        │
+│  Creates foundation for autonomous development              │
+│  • Reads project specification                              │
+│  • Generates feature_list.json (50-200 test cases)          │
+│  • Creates init.sh (reproducible environment setup)          │
+│  • Initializes git repository                               │
+│  • Documents Session 1 in claude-progress.txt               │
+└──────────────────┬──────────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Coding Agent(s)                          │
+│  Implements features one session at a time                  │
+│  • Session N: Read logs → verify env → implement feature    │
+│  • Test thoroughly (browser automation preferred)            │
+│  • Mark passes: true → commit → update progress log         │
+│  • Session N+1: Repeat with next feature                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Session Management
+
+Each development session operates with a fresh context window but maintains continuity through three files:
+
+1. **feature_list.json** - Source of truth for what needs building and what's complete
+2. **claude-progress.txt** - Session-to-session memory and implementation notes
+3. **init.sh** - Reproducible environment setup script
+
+**Typical Flow:**
+```
+Session 1 (Initializer): Specification → feature_list.json + init.sh + git init
+Session 2 (Coding):      Feature A → test → commit → update logs
+Session 3 (Coding):      Feature B → test → commit → update logs
+Session 4 (Coding):      Feature C → test → commit → update logs
+...
+Session N (Coding):      Final feature → project complete
+```
+
+### Core Guardrails
+
+These rules ensure quality and reliability across sessions:
+
+- **feature_list.json is immutable** - features never removed, only marked complete
+- **passes: true only after verification** - no premature completion claims
+- **One feature per session** - maintains focus and clean boundaries
+- **Mandatory testing** - browser automation (MCP Puppeteer) for web apps
+- **Progress logging** - every session documented in claude-progress.txt
+- **Clean exits** - always commit and leave working tree clean
+- **Session start protocol** - read logs, verify environment before starting work
+
+### When to Use This Pattern
+
+**Use long-running harness for:**
+- Complex applications requiring 10+ hours of development
+- Multi-session projects exceeding context window capacity
+- Greenfield development with well-defined scope
+- Quality-critical work requiring systematic testing
+- Projects where autonomous development is desired
+
+**Use standard workflow for:**
+- Simple tasks (< 3 hours work)
+- Research or exploration (no implementation)
+- Bug fixes in existing code
+- Documentation updates
+
+### Files and Structure
+
+```
+project/
+├── feature_list.json        # Test cases and completion tracking
+├── claude-progress.txt      # Session memory and notes
+├── init.sh                  # Environment setup (executable)
+├── .claude/
+│   └── agents/
+│       ├── initializer.md   # Initialization agent prompt
+│       └── coding-agent.md  # Implementation agent prompt
+└── [project files]
+```
+
+Templates available in `harness/` directory.
+
+See `docs/harness-guide.md` for detailed usage instructions.
+
 ## Template-Specific Agents
 
-This template repository defines specialized agents to assist with knowledge capture, project scaffolding, workspace organization, and template maintenance.
+This template repository defines specialized agents to assist with knowledge capture, project scaffolding, workspace organization, template maintenance, and long-running autonomous development.
+
+### initializer
+
+**Purpose**: Set up foundation for long-running autonomous development by creating comprehensive project scaffolding and test specifications.
+
+**Capabilities**:
+- Read and analyze project specifications
+- Generate exhaustive feature_list.json (50-200 test cases)
+- Create reproducible init.sh environment setup script
+- Initialize git repository with clean first commit
+- Document initialization in claude-progress.txt
+- Establish project structure matching tech stack
+
+**When to Invoke**:
+- Starting new greenfield project for autonomous development
+- Project requires 10+ hours of multi-session development
+- Need systematic feature tracking and testing
+- Want to enable coding agents to work independently
+
+**Example Invocation**:
+```
+I want to build a task management web app with React and Node.js backend. Please initialize
+the project for long-running autonomous development with comprehensive feature tracking.
+```
+
+**Guardrails**:
+- Must generate minimum 50 test cases (be exhaustive)
+- Only marks project setup (ID "1") as complete
+- Verifies init.sh runs successfully before finishing
+- Never implements features beyond basic structure
+
+### coding-agent
+
+**Purpose**: Implement features from feature_list.json one session at a time with thorough testing and clean git commits.
+
+**Capabilities**:
+- Follow strict session start protocol (read logs, verify environment)
+- Implement ONE feature per session
+- Test thoroughly using browser automation (MCP Puppeteer for web apps)
+- Mark features complete only after verification
+- Update feature_list.json and claude-progress.txt
+- Create clean git commits with descriptive messages
+- Leave working tree clean between sessions
+
+**When to Invoke**:
+- Continuing development on initialized long-running project
+- Implementing next feature from feature_list.json
+- Each coding session after initialization
+
+**Example Invocation**:
+```
+Please continue development on this project. Implement the next feature from feature_list.json.
+```
+
+**Guardrails**:
+- MUST read claude-progress.txt and feature_list.json at session start
+- MUST run init.sh to verify environment
+- ONE feature per session (no exceptions)
+- Testing mandatory before marking passes: true
+- NEVER removes features from feature_list.json
+- ALWAYS commits with clean tree before ending session
 
 ### janitor
 

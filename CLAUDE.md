@@ -31,10 +31,123 @@ Details of the change...
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
+## Long-Running Development (Multi-Session Projects)
+
+This template supports Anthropic's proven pattern for autonomous multi-session development. Use this for complex projects requiring 10+ hours of work across multiple sessions.
+
+### First Session: Initialization
+
+**Invoke the initializer agent** to set up the project foundation:
+
+```
+I want to build [project description]. Please initialize for long-running autonomous development.
+```
+
+**The initializer agent will:**
+1. Read your project specification
+2. Generate `feature_list.json` with 50-200 comprehensive test cases
+3. Create `init.sh` for reproducible environment setup
+4. Initialize git repository with clean first commit
+5. Document Session 1 in `claude-progress.txt`
+
+**DO NOT use initializer for:**
+- Simple tasks (< 3 hours)
+- Bug fixes in existing code
+- Research or exploration
+- Documentation updates
+
+### Subsequent Sessions: Implementation
+
+**Invoke the coding-agent** to implement features one at a time:
+
+```
+Please continue development. Implement the next feature from feature_list.json.
+```
+
+**The coding-agent follows strict protocol:**
+
+1. **Session Start** (MANDATORY):
+   - Reads `claude-progress.txt` (session memory)
+   - Reads `feature_list.json` (work tracker)
+   - Reviews git log (recent changes)
+   - Runs `./init.sh` (verifies environment)
+   - Tests basic functionality (smoke test)
+
+2. **Implementation**:
+   - Implements ONE feature from feature_list.json
+   - Tests thoroughly (browser automation for web apps)
+   - Marks `passes: true` only after verification
+   - Creates git commit with descriptive message
+   - Updates `claude-progress.txt` with session notes
+
+3. **Session End**:
+   - Verifies working tree clean
+   - Documents next recommended feature
+   - Provides progress summary
+
+### Core Guardrails
+
+These rules ensure quality across sessions:
+
+- **feature_list.json is source of truth** - features never removed
+- **passes: true requires verification** - no premature completion
+- **One feature per session** - maintains focus and clean boundaries
+- **Testing mandatory** - browser automation (MCP) preferred for web apps
+- **Progress logging** - every session documented
+- **Clean exits** - always commit and leave working tree clean
+
+### Browser Automation for Testing
+
+For web applications, coding-agent uses MCP Puppeteer for verification.
+
+**Setup** (add to `.claude/settings.json`):
+```json
+{
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    }
+  }
+}
+```
+
+Agents use browser tools to:
+- Navigate to pages and verify rendering
+- Fill forms and submit data
+- Click buttons and test interactions
+- Verify end-to-end workflows
+- Capture screenshots for documentation
+
+### Project Files
+
+Long-running projects maintain three critical files:
+
+| File | Purpose | Updated By |
+|------|---------|------------|
+| `feature_list.json` | Test cases and completion tracking | Both agents |
+| `claude-progress.txt` | Session memory and implementation notes | Both agents |
+| `init.sh` | Reproducible environment setup | Initializer (created), Coding-agent (runs) |
+
+**Templates** available in `harness/` directory.
+
+### When NOT to Use Long-Running Pattern
+
+Use standard Main Assistant workflow for:
+- Simple tasks (< 3 hours)
+- Research or exploration (no implementation)
+- Bug fixes in existing code
+- Documentation updates
+- Unclear or evolving requirements
+
+See `docs/harness-guide.md` for detailed usage instructions and examples.
+
 ## Template Agents
 
-This repository defines specialized agents for template maintenance and project bootstrapping. Agent definitions are stored in `.claude/agents/`:
+This repository defines specialized agents for template maintenance, project bootstrapping, and long-running autonomous development. Agent definitions are stored in `.claude/agents/`:
 
+- **initializer**: Sets up foundation for long-running development (feature_list.json, init.sh, progress log)
+- **coding-agent**: Implements features one session at a time with testing and git commits
 - **janitor**: Maintains clean directory structure and creates workspace for agents as needed
 - **crawl4ai-knowledge-harvester**: Expert in Crawl4AI workflows and knowledge base curation
 - **agent-bootstrap-guide**: Guides new projects through template adoption process

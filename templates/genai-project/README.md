@@ -36,9 +36,27 @@ Copy this directory to jump-start a new generative AI project. It captures the c
 ## Folder Overview
 - `knowledge/` — Markdown/HTML snapshots and metadata for documentation sources defined in `knowledge/sources.json`.
 - `scripts/` — Automation scripts. `crawl_docs.py` handles interactive Crawl4AI runs.
+- `harness/` — Templates for long-running autonomous development (feature tracking, progress logs, setup scripts).
+- `.claude/agents/` — Agent definitions for initializer and coding-agent workflows.
 - `.gitignore` — Keeps virtual environments and artifacts out of version control.
 
 Adapt the template as needed: add workflow-specific commands, seed the knowledge directory with domain references, or include additional setup scripts. The goal is to provide a repeatable starting point that pairs project analysis with a curated knowledge base.
+
+## Long-Running Development
+
+For complex projects requiring multi-session autonomous development:
+
+1. **Initialize project** with comprehensive feature tracking:
+   ```
+   I want to build [project description]. Please initialize for long-running autonomous development.
+   ```
+
+2. **Implement features** one session at a time:
+   ```
+   Please continue development. Implement the next feature from feature_list.json.
+   ```
+
+See `harness/README.md` and main repository's `docs/harness-guide.md` for complete documentation on the two-agent pattern (initializer + coding-agent).
 
 ## Co-Authors
 
