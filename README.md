@@ -20,6 +20,19 @@ This repository is the starting point for new agent-based engagements. Launch a 
 - `scripts/` — utilities for Crawl4AI workflows and other automation helpers.
 - `templates/` — reusable snippets and scaffolds (e.g., `templates/genai-project/`).
 
+## Reference Sources
+Key upstream articles that shaped the harness and orchestrator scaffolding:
+- Anthropic — Effective harnesses for long-running agents: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+- Anthropic — Agent SDK overview: https://platform.claude.com/docs/en/agent-sdk/overview
+- Anthropic — Autonomous coding quickstart: https://github.com/anthropics/claude-quickstarts/tree/main/autonomous-coding
+- Anthropic — Claude 4 best practices: https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-4-best-practices
+- Anthropic — MCP overview and protocol site: https://modelcontextprotocol.io and https://github.com/anthropics/mcp
+- Anthropic — MCP workspace applications (internal synthesis): derived from `knowledge/agentic-coding/mcp_workspace_applications.md` and workspace_ops patterns (no public URL).
+- Anthropic — Claude Code best practices: https://www.anthropic.com/engineering/claude-code-best-practices
+- Ran Isenberg — Agentic AI prompting best practices: https://www.ranthebuilder.cloud/post/agentic-ai-prompting-best-practices-for-smarter-vibe-coding
+- Reddit — One year of AI agent lessons: https://www.reddit.com/r/AI_Agents/comments/1lpj771/ai_agent_best_practices_from_one_year_as_ai/
+- GitHub — 500+ AI Agent Projects catalog: https://github.com/ashishpatel26/500-AI-Agents-Projects
+
 When you customise this template for a project, update this README with context about the engagement, environment setup, and deployment targets so new collaborators can ramp quickly.
 
 ## Co-Authors
