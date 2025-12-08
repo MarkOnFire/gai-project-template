@@ -119,6 +119,126 @@ Agents use browser tools to:
 - Verify end-to-end workflows
 - Capture screenshots for documentation
 
+## Available MCP Servers
+
+Model Context Protocol (MCP) servers extend Claude's capabilities with specialized tools. These are deployed globally and available in all projects via `workspace_ops`.
+
+### CLI Agent Server (Multi-LLM Code Review & Queries)
+
+**Purpose**: Get independent perspectives from other AI models (Gemini, Claude CLI, Codex) for code review, architecture decisions, or general queries. **Cost-effective alternative to parallel agent execution.**
+
+**Location**: `/Users/mriechers/Developer/workspace_ops/mcp-servers/cli-agent-server/`
+**Status**: ✅ Active and deployed globally
+**Registry**: See `workspace_ops/config/mcp-configs/mcp_servers_registry.json`
+
+**Why Use This Instead of Parallel Agents:**
+- **Lower cost**: Uses local CLI agents with your existing API keys
+- **Faster**: Direct CLI execution without agent overhead
+- **Simpler**: Single tool call vs. complex agent coordination
+- **Multi-LLM**: Access Gemini, Claude, and Codex perspectives in one place
+
+**Available Tools:**
+
+1. **`codex_review_code`** - Independent code review with structured feedback
+   ```
+   # Automatically available when you say:
+   "Review this code using Codex"
+
+   # Provides:
+   - Security vulnerability detection
+   - Performance issue identification
+   - Code style and maintainability analysis
+   - Severity-ranked issues with line numbers
+   ```
+
+2. **`query_agent`** - Ask any CLI agent a question
+   ```
+   # Usage examples:
+   "Ask Gemini: What's the best caching strategy for this API?"
+   "Get Claude's opinion on this architecture decision"
+   "Ask Codex to explain this algorithm"
+
+   # Parameters:
+   - prompt: Your question (required)
+   - agent: "claude", "gemini", or "codex" (default: claude)
+   - model: Optional model override
+   - system_prompt: Optional instructions
+   ```
+
+3. **`query_multiple_agents`** - Get consensus from multiple AIs
+   ```
+   # Usage:
+   "Ask all agents: Should I use Redis or Memcached for caching?"
+
+   # Automatically synthesizes responses or shows individual perspectives
+   # Much cheaper than spawning parallel agent tasks!
+   ```
+
+4. **`create_agent_session`** - Start persistent conversation
+   ```
+   # For multi-turn discussions:
+   "Start a conversation with Gemini about database optimization"
+
+   # Maintains context across multiple messages
+   ```
+
+5. **`send_message_to_session`** - Continue conversation
+6. **`get_session_history`** - Review past messages
+7. **`close_session`** - End conversation
+8. **`share_context_with_agent`** - Inject files/data into session
+9. **`aggregate_agent_responses`** - Synthesize multiple responses
+10. **`list_active_sessions`** - Show all open conversations
+
+**When to Use CLI Agent Server vs. Parallel Agents:**
+
+✅ **Use CLI Agent Server for:**
+- Code review from different AI perspective
+- Getting "second opinions" on architecture decisions
+- Exploring different approaches to a problem
+- Quick queries that don't need full agent context
+- Cost-sensitive multi-LLM queries
+
+❌ **Use Parallel Agent Tasks for:**
+- Complex multi-step tasks requiring tool use
+- Tasks needing access to filesystem/bash/edit tools
+- Long-running autonomous work
+- Tasks requiring agent-specific specialization
+
+**Configuration:**
+- Already deployed globally via `workspace_ops/scripts/deploy_mcp_configs.sh`
+- Requires API keys in workspace_ops `.env`: `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
+- Logs: `/Users/mriechers/Developer/workspace_ops/mcp-servers/cli-agent-server/logs/`
+
+**Example Workflows:**
+
+```
+# Code review workflow
+1. "Review this function using Codex"
+2. Get structured feedback with security/performance/style issues
+3. Apply fixes based on recommendations
+
+# Architecture decision workflow
+1. "Ask Gemini and Claude: What's the best state management approach for React?"
+2. Get synthesized consensus or individual perspectives
+3. Use aggregate_agent_responses to combine insights
+
+# Multi-turn exploration
+1. create_agent_session with Gemini
+2. send_message_to_session: "How does caching work in Redis?"
+3. send_message_to_session: "Show me an example with Node.js"
+4. close_session when done
+```
+
+### Other Available MCP Servers
+
+**uw-policy-agent**: UW-Madison HR policy search
+**editorial-assistant**: PBS Wisconsin video metadata and transcripts
+**obsidian-vault**: Access and search Obsidian notes
+**claude-chat-export**: Export Claude conversation threads
+**fantastical**: Calendar event management
+
+See `workspace_ops/CLAUDE.md` for complete MCP server documentation.
+
 ### Project Files
 
 Long-running projects maintain three critical files:
