@@ -1,104 +1,40 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+> **See [AGENTS.md](./AGENTS.md)** for complete project instructions.
 
-## Repository Purpose
+This file contains only Claude Code-specific notes. All general project documentation, commands, agent definitions, and architecture information is in AGENTS.md.
 
-This is a template repository for bootstrapping generative AI projects. It provides scaffolding for:
-- Crawl4AI-powered documentation harvesting
-- Agent-based development workflows
-- Knowledge base management
-- Structured project initialization
+## Claude Code Features
 
-## Git Commit Convention
+### TodoWrite for Task Tracking
 
-**IMPORTANT**: This project follows workspace-wide commit conventions.
+When working on multi-step tasks, use the TodoWrite tool to track progress. This helps maintain visibility into task completion and demonstrates thoroughness.
 
-See: `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`
+**When to use TodoWrite:**
+- Complex multi-step tasks (3+ distinct steps)
+- Non-trivial and complex tasks requiring careful planning
+- User explicitly requests todo list
+- User provides multiple tasks to complete
 
-**Quick Reference**: All AI-generated commits must include `[Agent: <name>]` after the subject line.
+**When NOT to use:**
+- Single straightforward task
+- Trivial tasks (< 3 steps)
+- Purely conversational requests
 
-Example:
-```
-fix: Description of fix
+### Long-Running Development Sessions
 
-[Agent: Main Assistant]
+For projects using the long-running development pattern (see AGENTS.md), Claude Code agents should:
 
-Details of the change...
+1. **Use TodoWrite** to track feature implementation steps
+2. **Read session files first** (claude-progress.txt, feature_list.json)
+3. **Run init.sh** before starting work
+4. **Test thoroughly** before marking features complete
+5. **Update progress log** at end of session
+6. **Commit with clean tree** before ending session
 
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+### Browser Automation Testing
 
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-## Long-Running Development (Multi-Session Projects)
-
-This template supports Anthropic's proven pattern for autonomous multi-session development. Use this for complex projects requiring 10+ hours of work across multiple sessions.
-
-### First Session: Initialization
-
-**Invoke the initializer agent** to set up the project foundation:
-
-```
-I want to build [project description]. Please initialize for long-running autonomous development.
-```
-
-**The initializer agent will:**
-1. Read your project specification
-2. Generate `feature_list.json` with 50-200 comprehensive test cases
-3. Create `init.sh` for reproducible environment setup
-4. Initialize git repository with clean first commit
-5. Document Session 1 in `claude-progress.txt`
-
-**DO NOT use initializer for:**
-- Simple tasks (< 3 hours)
-- Bug fixes in existing code
-- Research or exploration
-- Documentation updates
-
-### Subsequent Sessions: Implementation
-
-**Invoke the coding-agent** to implement features one at a time:
-
-```
-Please continue development. Implement the next feature from feature_list.json.
-```
-
-**The coding-agent follows strict protocol:**
-
-1. **Session Start** (MANDATORY):
-   - Reads `claude-progress.txt` (session memory)
-   - Reads `feature_list.json` (work tracker)
-   - Reviews git log (recent changes)
-   - Runs `./init.sh` (verifies environment)
-   - Tests basic functionality (smoke test)
-
-2. **Implementation**:
-   - Implements ONE feature from feature_list.json
-   - Tests thoroughly (browser automation for web apps)
-   - Marks `passes: true` only after verification
-   - Creates git commit with descriptive message
-   - Updates `claude-progress.txt` with session notes
-
-3. **Session End**:
-   - Verifies working tree clean
-   - Documents next recommended feature
-   - Provides progress summary
-
-### Core Guardrails
-
-These rules ensure quality across sessions:
-
-- **feature_list.json is source of truth** - features never removed
-- **passes: true requires verification** - no premature completion
-- **One feature per session** - maintains focus and clean boundaries
-- **Testing mandatory** - browser automation (MCP) preferred for web apps
-- **Progress logging** - every session documented
-- **Clean exits** - always commit and leave working tree clean
-
-### Browser Automation for Testing
-
-For web applications, coding-agent uses MCP Puppeteer for verification.
+For web applications, use MCP Puppeteer for verification testing.
 
 **Setup** (add to `.claude/settings.json`):
 ```json
@@ -112,7 +48,7 @@ For web applications, coding-agent uses MCP Puppeteer for verification.
 }
 ```
 
-Agents use browser tools to:
+Coding agents should use browser tools to:
 - Navigate to pages and verify rendering
 - Fill forms and submit data
 - Click buttons and test interactions
@@ -121,15 +57,15 @@ Agents use browser tools to:
 
 ## Available MCP Servers
 
-Model Context Protocol (MCP) servers extend Claude's capabilities with specialized tools. These are deployed globally and available in all projects via `workspace_ops`.
+Model Context Protocol (MCP) servers extend Claude's capabilities with specialized tools. These are deployed globally and available in all projects.
 
 ### CLI Agent Server (Multi-LLM Code Review & Queries)
 
 **Purpose**: Get independent perspectives from other AI models (Gemini, Claude CLI, Codex) for code review, architecture decisions, or general queries. **Cost-effective alternative to parallel agent execution.**
 
-**Location**: `/Users/mriechers/Developer/workspace_ops/mcp-servers/cli-agent-server/`
+**Location**: `/Users/mriechers/Developer/the-lodge/mcp-servers/cli-agent-server/`
 **Status**: ✅ Active and deployed globally
-**Registry**: See `workspace_ops/config/mcp-configs/mcp_servers_registry.json`
+**HTTP API**: Available at `http://localhost:3001` (runs automatically via launchd)
 
 **Why Use This Instead of Parallel Agents:**
 - **Lower cost**: Uses local CLI agents with your existing API keys
@@ -175,13 +111,6 @@ Model Context Protocol (MCP) servers extend Claude's capabilities with specializ
    ```
 
 4. **`create_agent_session`** - Start persistent conversation
-   ```
-   # For multi-turn discussions:
-   "Start a conversation with Gemini about database optimization"
-
-   # Maintains context across multiple messages
-   ```
-
 5. **`send_message_to_session`** - Continue conversation
 6. **`get_session_history`** - Review past messages
 7. **`close_session`** - End conversation
@@ -204,10 +133,20 @@ Model Context Protocol (MCP) servers extend Claude's capabilities with specializ
 - Long-running autonomous work
 - Tasks requiring agent-specific specialization
 
+**HTTP API Endpoints:**
+
+See `the-lodge/mcp-servers/cli-agent-server/CLAUDE.md` for complete HTTP API documentation, including:
+- `POST /query` - Query single agent
+- `POST /query-multiple` - Query multiple agents
+- `POST /code-review` - Get structured code review
+- `POST /session/create` - Start conversation session
+- `POST /session/message` - Send message to session
+- And more...
+
 **Configuration:**
-- Already deployed globally via `workspace_ops/scripts/deploy_mcp_configs.sh`
-- Requires API keys in workspace_ops `.env`: `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
-- Logs: `/Users/mriechers/Developer/workspace_ops/mcp-servers/cli-agent-server/logs/`
+- Already deployed globally via `the-lodge/scripts/deploy_mcp_configs.sh`
+- API keys stored in macOS Keychain (service: `developer.workspace.*`)
+- Logs: `/Users/mriechers/Developer/the-lodge/mcp-servers/cli-agent-server/logs/`
 
 **Example Workflows:**
 
@@ -237,43 +176,23 @@ Model Context Protocol (MCP) servers extend Claude's capabilities with specializ
 **claude-chat-export**: Export Claude conversation threads
 **fantastical**: Calendar event management
 
-See `workspace_ops/CLAUDE.md` for complete MCP server documentation.
+See `the-lodge/CLAUDE.md` for complete MCP server documentation.
 
-### Project Files
+## Secrets Management
 
-Long-running projects maintain three critical files:
+**IMPORTANT**: API keys are stored in macOS Keychain, NOT .env files.
 
-| File | Purpose | Updated By |
-|------|---------|------------|
-| `feature_list.json` | Test cases and completion tracking | Both agents |
-| `claude-progress.txt` | Session memory and implementation notes | Both agents |
-| `init.sh` | Reproducible environment setup | Initializer (created), Coding-agent (runs) |
+When a project needs API keys:
+1. Ask user to add secret to Keychain: `security add-generic-password -s "developer.workspace.KEY_NAME" -a "$USER" -w`
+2. Retrieve in Python: `from scripts.keychain_secrets import KeychainSecrets; secrets = KeychainSecrets(); key = secrets.get("KEY_NAME")`
+3. Retrieve in shell: `./scripts/get-secret.sh KEY_NAME`
 
-**Templates** available in `harness/` directory.
+**Never**:
+- Write secrets to .env files
+- Commit secrets to git
+- Store secrets in code
 
-### When NOT to Use Long-Running Pattern
-
-Use standard Main Assistant workflow for:
-- Simple tasks (< 3 hours)
-- Research or exploration (no implementation)
-- Bug fixes in existing code
-- Documentation updates
-- Unclear or evolving requirements
-
-See `docs/harness-guide.md` for detailed usage instructions and examples.
-
-## Template Agents
-
-This repository defines specialized agents for template maintenance, project bootstrapping, and long-running autonomous development. Agent definitions are stored in `.claude/agents/`:
-
-- **initializer**: Sets up foundation for long-running development (feature_list.json, init.sh, progress log)
-- **coding-agent**: Implements features one session at a time with testing and git commits
-- **janitor**: Maintains clean directory structure and creates workspace for agents as needed
-- **crawl4ai-knowledge-harvester**: Expert in Crawl4AI workflows and knowledge base curation
-- **agent-bootstrap-guide**: Guides new projects through template adoption process
-- **template-maintainer**: Maintains template and ensures workspace compliance
-
-See `AGENTS.md` for complete agent documentation and collaboration patterns.
+See `/Users/mriechers/Developer/the-lodge/conventions/SECRETS_MANAGEMENT.md` for complete documentation.
 
 ## Initial Agent Workflow
 
@@ -285,141 +204,12 @@ When first working in a project derived from this template:
 5. Document the knowledge update strategy (cadence, tooling, ownership) in the project README
 6. Stage and commit the onboarding work; ask owner to configure remote if needed
 
-## Python Environment Setup
+## Notes for Claude Code
 
-**Required for Crawl4AI**: Python 3.11
-
-```bash
-# Create dedicated virtual environment
-python3.11 -m venv .venv-crawl4ai
-source .venv-crawl4ai/bin/activate
-
-# Install dependencies
-python3.11 -m pip install crawl4ai
-python3.11 -m playwright install chromium
-```
-
-## Common Development Commands
-
-### Knowledge Capture (Crawl4AI)
-
-```bash
-# Interactive setup - define initial sources
-python3.11 scripts/crawl_docs.py --init
-
-# Append additional sources
-python3.11 scripts/crawl_docs.py --append
-
-# Re-crawl specific source by slug
-python3.11 scripts/crawl_docs.py --slug <slug-name>
-
-# Re-crawl specific category
-python3.11 scripts/crawl_docs.py --category <category-name>
-
-# Dry run (fetch without writing)
-python3.11 scripts/crawl_docs.py --dry-run
-
-# Default run (crawl all sources)
-python3.11 scripts/crawl_docs.py
-```
-
-The crawler writes outputs to `knowledge/<category>/`:
-- `<slug>.md` - Markdown conversion
-- `<slug>.html` - Raw HTML
-- `<slug>.json` - Metadata (URL, timestamp, status)
-
-Source definitions are stored in `knowledge/sources.json`.
-
-## Repository Architecture
-
-### Core Structure
-
-```
-.
-├── AGENTS.md              # Agent architecture design document
-├── docs/
-│   └── bootstrap.md       # Detailed setup guide for template adopters
-├── knowledge/             # Documentation snapshots and metadata
-│   └── sources.json       # Crawler source definitions
-├── scripts/
-│   └── crawl_docs.py      # Interactive Crawl4AI harvester
-└── templates/
-    └── genai-project/     # Reusable project scaffold
-```
-
-### Key Files
-
-- **AGENTS.md**: Living design document describing agent roles, responsibilities, and coordination patterns. Update this when defining new agent architectures.
-- **docs/bootstrap.md**: Three-step bootstrap process (create repo, setup Crawl4AI, design agents). Reference when initializing new projects.
-- **scripts/crawl_docs.py**: Async crawler with interactive CLI. Supports filtering by category/slug, dry-run mode, and incremental updates.
-- **templates/genai-project/**: Copy-ready scaffold with knowledge/, scripts/, and configuration files for new projects.
-
-### Knowledge Management
-
-The `knowledge/` directory stores structured documentation:
-- Organized by category (e.g., `knowledge/alfredapp/`, `knowledge/toggl/`)
-- Each source has three files: `.md`, `.html`, `.json`
-- `sources.json` maintains the authoritative source list
-- Commit snapshots to version control for research trail preservation
-
-### Git Hooks
-
-The repository uses workspace-wide git hooks from `/Users/mriechers/Developer/workspace_ops/conventions/git-hooks/`.
-
-Configured in `.githooks/commit-msg` - delegates to workspace commit-msg hook for enforcement.
-
-## Crawl4AI Script Details
-
-The `scripts/crawl_docs.py` script:
-- Requires Python 3.11 shebang (`#!/usr/bin/env python3.11`)
-- Uses `AsyncWebCrawler` from crawl4ai package
-- Supports multiple operational modes via CLI flags
-- Validates source structure (requires `category`, `slug`, `url`)
-- Generates slugs from URLs if not provided
-- Writes three artifacts per source (HTML, Markdown, JSON metadata)
-- Includes timestamp and status tracking in metadata
-
-### Interactive Prompts
-
-When run with `--init` or `--append`:
-- Prompts for: category, URL, slug (with auto-generated default), notes
-- Leave category blank to finish input loop
-- Sources are immediately saved to `knowledge/sources.json`
-
-### Error Handling
-
-- Failed crawls are reported but don't stop batch processing
-- Exit code 1 if any source failed, 0 if all succeeded
-- Dry-run mode fetches but skips file writes
-
-## Templates Usage
-
-The `templates/genai-project/` directory is a copy-ready scaffold:
-```bash
-cp -R templates/genai-project ~/Projects/new-project
-cd ~/Projects/new-project
-# Follow BOOTSTRAP.md in copied directory
-```
-
-Contains:
-- Knowledge directory structure
-- Copy of `scripts/crawl_docs.py`
-- `.gitignore` for Python virtual environments
-- `BOOTSTRAP.md` quickstart guide
-- `README.md` template with Co-Authors section
-
-## Agent Architecture Considerations
-
-When documenting agents in `AGENTS.md`:
-- Define clear role boundaries and responsibilities
-- Document inter-agent communication patterns
-- Establish evaluation and testing strategies
-- Keep API credentials in `.env` (never commit), use `.env.example` for templates
-- Plan for agent evolution (baseline metrics, regression tests)
-
-## Documentation Maintenance
-
-- Keep `knowledge/` snapshots current by re-running crawler periodically
-- Update `AGENTS.md` when agent topology changes
-- Document any new automation scripts in this file
-- When customizing for a specific project, replace this template README with project-specific context
+1. **Read AGENTS.md first** - Contains all project-specific instructions, commands, and architecture
+2. **Use TodoWrite appropriately** - Only for multi-step tasks, not single-step operations
+3. **Leverage MCP servers** - CLI Agent Server provides cost-effective multi-LLM queries
+4. **Follow long-running pattern** - When implementing features via coding-agent, follow strict guardrails
+5. **Test thoroughly** - Use browser automation (MCP Puppeteer) for web apps
+6. **Secrets in Keychain** - Never write API keys to .env files
+7. **Commit with attribution** - Include `[Agent: <name>]` in all commits

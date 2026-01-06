@@ -1,10 +1,69 @@
-# Agent Architecture
+# Agent Instructions
 
-This document describes the agent roles, responsibilities, and collaboration patterns for projects derived from this template.
+<!--
+TEMPLATE NOTE: This is the primary instruction file for AI agents working in this repository.
+When creating a new project from this template, customize the following sections:
+1. Repository Purpose - describe your specific project
+2. Template Agents - keep only agents relevant to your project, add domain-specific ones
+3. Common Development Commands - replace with your project's actual commands
+4. Remove this comment block and all other "TEMPLATE NOTE" comments
+-->
+
+This document provides instructions for AI agents (Claude, Codex, DeepSeek, etc.) working with code in this repository.
+
+## Repository Purpose
+
+<!-- TEMPLATE NOTE: Replace this section with your project's actual purpose -->
+
+This is a template repository for bootstrapping generative AI projects. It provides scaffolding for:
+- Crawl4AI-powered documentation harvesting
+- Agent-based development workflows
+- Knowledge base management
+- Structured project initialization
+
+**When using this as a template**: Copy this structure and customize AGENTS.md for your specific project domain.
+
+## Git Commit Conventions
+
+**IMPORTANT**: This project follows workspace-wide commit conventions with agent attribution.
+
+**See**: `/Users/mriechers/Developer/the-lodge/conventions/COMMIT_CONVENTIONS.md`
+
+**Quick Reference**: AI-generated commits must include `[Agent: <name>]` after the subject line.
+
+Example:
+```
+feat: Add user authentication endpoints
+
+[Agent: Main Assistant]
+
+Implemented JWT-based auth with refresh tokens.
+Added middleware for protected routes.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>
+```
 
 ## Long-Running Development Pattern
 
 This template implements Anthropic's proven **two-agent harness** for autonomous multi-session development. This pattern enables complex projects to be built systematically over many sessions with maintained quality and continuity.
+
+### When to Use This Pattern
+
+**Use long-running harness for:**
+- Complex applications requiring 10+ hours of development
+- Multi-session projects exceeding context window capacity
+- Greenfield development with well-defined scope
+- Quality-critical work requiring systematic testing
+- Projects where autonomous development is desired
+
+**Use standard workflow for:**
+- Simple tasks (< 3 hours work)
+- Research or exploration (no implementation)
+- Bug fixes in existing code
+- Documentation updates
+- Unclear or evolving requirements
 
 ### Architecture Overview
 
@@ -60,42 +119,29 @@ These rules ensure quality and reliability across sessions:
 - **Clean exits** - always commit and leave working tree clean
 - **Session start protocol** - read logs, verify environment before starting work
 
-### When to Use This Pattern
+### Project Files
 
-**Use long-running harness for:**
-- Complex applications requiring 10+ hours of development
-- Multi-session projects exceeding context window capacity
-- Greenfield development with well-defined scope
-- Quality-critical work requiring systematic testing
-- Projects where autonomous development is desired
+Long-running projects maintain three critical files:
 
-**Use standard workflow for:**
-- Simple tasks (< 3 hours work)
-- Research or exploration (no implementation)
-- Bug fixes in existing code
-- Documentation updates
-
-### Files and Structure
-
-```
-project/
-├── feature_list.json        # Test cases and completion tracking
-├── claude-progress.txt      # Session memory and notes
-├── init.sh                  # Environment setup (executable)
-├── .claude/
-│   └── agents/
-│       ├── initializer.md   # Initialization agent prompt
-│       └── coding-agent.md  # Implementation agent prompt
-└── [project files]
-```
+| File | Purpose | Updated By |
+|------|---------|------------|
+| `feature_list.json` | Test cases and completion tracking | Both agents |
+| `claude-progress.txt` | Session memory and implementation notes | Both agents |
+| `init.sh` | Reproducible environment setup | Initializer (created), Coding-agent (runs) |
 
 Templates available in `harness/` directory.
 
 See `docs/harness-guide.md` for detailed usage instructions.
 
-## Template-Specific Agents
+## Template Agents
 
-This template repository defines specialized agents to assist with knowledge capture, project scaffolding, workspace organization, template maintenance, and long-running autonomous development.
+<!-- TEMPLATE NOTE: When customizing for a specific project:
+- Remove agents not relevant to your domain
+- Add domain-specific agents (e.g., aws-infrastructure-agent, frontend-specialist)
+- Update invocation examples to match your project context
+-->
+
+This template repository defines specialized agents for project scaffolding, workspace organization, template maintenance, and long-running autonomous development.
 
 ### initializer
 
@@ -255,6 +301,94 @@ Workspace conventions now require a .claude/settings/ directory. Please update t
 to include this and document it in CLAUDE.md.
 ```
 
+## Python Environment Setup
+
+**Required for Crawl4AI**: Python 3.11
+
+```bash
+# Create dedicated virtual environment
+python3.11 -m venv .venv-crawl4ai
+source .venv-crawl4ai/bin/activate
+
+# Install dependencies
+python3.11 -m pip install crawl4ai
+python3.11 -m playwright install chromium
+```
+
+**IMPORTANT**: MacOS system Python must not be modified. Always use virtual environments for Python projects in this workspace.
+
+## Common Development Commands
+
+<!-- TEMPLATE NOTE: Replace these with your project's actual commands -->
+
+### Knowledge Capture (Crawl4AI)
+
+```bash
+# Interactive setup - define initial sources
+python3.11 scripts/crawl_docs.py --init
+
+# Append additional sources
+python3.11 scripts/crawl_docs.py --append
+
+# Re-crawl specific source by slug
+python3.11 scripts/crawl_docs.py --slug <slug-name>
+
+# Re-crawl specific category
+python3.11 scripts/crawl_docs.py --category <category-name>
+
+# Dry run (fetch without writing)
+python3.11 scripts/crawl_docs.py --dry-run
+
+# Default run (crawl all sources)
+python3.11 scripts/crawl_docs.py
+```
+
+The crawler writes outputs to `knowledge/<category>/`:
+- `<slug>.md` - Markdown conversion
+- `<slug>.html` - Raw HTML
+- `<slug>.json` - Metadata (URL, timestamp, status)
+
+Source definitions are stored in `knowledge/sources.json`.
+
+## Repository Architecture
+
+### Core Structure
+
+```
+.
+├── AGENTS.md              # Agent architecture design document (THIS FILE)
+├── CLAUDE.md              # Claude-specific notes (redirects here)
+├── docs/
+│   └── bootstrap.md       # Detailed setup guide for template adopters
+├── knowledge/             # Documentation snapshots and metadata
+│   └── sources.json       # Crawler source definitions
+├── scripts/
+│   └── crawl_docs.py      # Interactive Crawl4AI harvester
+└── templates/
+    └── genai-project/     # Reusable project scaffold
+```
+
+### Key Files
+
+- **AGENTS.md**: Living design document describing agent roles, responsibilities, and coordination patterns. Update this when defining new agent architectures.
+- **docs/bootstrap.md**: Three-step bootstrap process (create repo, setup Crawl4AI, design agents). Reference when initializing new projects.
+- **scripts/crawl_docs.py**: Async crawler with interactive CLI. Supports filtering by category/slug, dry-run mode, and incremental updates.
+- **templates/genai-project/**: Copy-ready scaffold with knowledge/, scripts/, and configuration files for new projects.
+
+### Knowledge Management
+
+The `knowledge/` directory stores structured documentation:
+- Organized by category (e.g., `knowledge/alfredapp/`, `knowledge/toggl/`)
+- Each source has three files: `.md`, `.html`, `.json`
+- `sources.json` maintains the authoritative source list
+- Commit snapshots to version control for research trail preservation
+
+### Git Hooks
+
+The repository uses workspace-wide git hooks from `/Users/mriechers/Developer/the-lodge/conventions/git-hooks/`.
+
+Configured in `.githooks/commit-msg` - delegates to workspace commit-msg hook for enforcement.
+
 ## Agent Collaboration Patterns
 
 ### Knowledge Capture Workflow
@@ -311,7 +445,7 @@ When creating new project-specific agents for template-derived projects:
 2. **Document Capabilities**: List specific tasks the agent can perform
 3. **Provide Invocation Examples**: Show how users should request agent assistance
 4. **Register with Workspace**: Use Agent Registrar to add agent to workspace registry
-5. **Create Agent Definition**: Add `.claude/agents/<agent-name>.md` file
+5. **Create Agent Definition**: Add `.claude/agents/<agent-name>.md` file (or `.codex/agents/`, etc.)
 6. **Update This File**: Document agent in this AGENTS.md
 
 ## Workspace-Standard Agents
@@ -323,14 +457,14 @@ These agents are available across all workspace projects:
 - **librarian**: Repository health monitoring and workspace audits
 - **Agent Registrar**: Agent lifecycle management and registration
 
-See `/Users/mriechers/Developer/workspace_ops/conventions/AGENT_REGISTRY.md` for complete workspace agent documentation.
+See `/Users/mriechers/Developer/the-lodge/conventions/AGENT_REGISTRY.md` for complete workspace agent documentation.
 
 ## Agent Registration Process
 
 To register a new agent for this project:
 
-1. Create agent definition file in `.claude/agents/<agent-name>.md`
-2. Invoke Agent Registrar via Claude Code Task tool
+1. Create agent definition file in `.claude/agents/<agent-name>.md` (or `.codex/agents/`, etc.)
+2. Invoke Agent Registrar via Claude Code or other LLM interface
 3. Agent Registrar will:
    - Validate agent definition
    - Update workspace AGENT_REGISTRY.md
@@ -358,6 +492,8 @@ Track agent performance through:
 
 ## Template Customization
 
+<!-- TEMPLATE NOTE: This section is meta-guidance for template users -->
+
 When adapting this template for a specific project:
 
 1. **Update this file** to reflect project-specific agent roles
@@ -365,12 +501,37 @@ When adapting this template for a specific project:
 3. **Add domain-specific agents** (e.g., aws-infrastructure-agent, frontend-specialist)
 4. **Document collaboration patterns** unique to your project
 5. **Maintain workspace compliance** while customizing for needs
+6. **Update Common Development Commands** section with your project's actual commands
+7. **Replace Repository Purpose** section with your project's actual purpose
+8. **Remove all "TEMPLATE NOTE" comments** after customization
 
-## Questions and Support
+## Workspace Conventions
 
-- **Agent Registry**: `/Users/mriechers/Developer/workspace_ops/conventions/AGENT_REGISTRY.md`
-- **Commit Conventions**: `/Users/mriechers/Developer/workspace_ops/conventions/COMMIT_CONVENTIONS.md`
-- **Infrastructure Requirements**: `/Users/mriechers/Developer/workspace_ops/conventions/WORKSPACE_INFRASTRUCTURE_REQUIREMENTS.md`
-- **Bootstrap Guide**: `docs/bootstrap.md`
+For complete workspace standards, see:
 
-For agent-related questions, consult workspace conventions or invoke Agent Registrar.
+- **Agent Registry**: `/Users/mriechers/Developer/the-lodge/conventions/AGENT_REGISTRY.md`
+- **Commit Conventions**: `/Users/mriechers/Developer/the-lodge/conventions/COMMIT_CONVENTIONS.md`
+- **Agent Cooperation**: `/Users/mriechers/Developer/the-lodge/conventions/AGENT_COOPERATION.md`
+- **Infrastructure Requirements**: `/Users/mriechers/Developer/the-lodge/conventions/WORKSPACE_INFRASTRUCTURE_REQUIREMENTS.md`
+
+## Notes for AI Agents
+
+1. **Include agent attribution** in commits. Add `[Agent: <name>]` after the subject line for tracking purposes.
+
+2. **Follow workspace conventions**. When working across multiple repos, ensure all projects reference `the-lodge/conventions/` documents rather than duplicating content.
+
+3. **Maintain idempotency**. Scripts and automation should be safe to run multiple times without corrupting state.
+
+4. **Test changes carefully**. Use dry-run modes extensively when available.
+
+5. **Document everything**. Keep this AGENTS.md file current as agent topology evolves.
+
+6. **Preserve research trails**. Commit knowledge snapshots to version control for auditability.
+
+7. **Private repository**. This repository should remain private as it may contain workspace topology and sensitive configuration paths.
+
+8. **Follow cooperation conventions**. When designing multi-agent workflows, use the standardized patterns (Sequential, Parallel, Handoff, Review Loop) defined in `/Users/mriechers/Developer/the-lodge/conventions/AGENT_COOPERATION.md`.
+
+9. **Always use Python virtual environments**. MacOS system Python must not be modified. When creating Python projects, always set up a virtual environment and install dependencies there.
+
+10. **Claude-specific features**: See CLAUDE.md for notes about TodoWrite, MCP servers, and other Claude Code-specific capabilities.
